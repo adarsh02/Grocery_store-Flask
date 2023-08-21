@@ -1,0 +1,134 @@
+{% extends "user_home.html" %}
+
+{% block title %}
+    Checkout
+{% endblock %}
+
+{% block content %}
+<style>
+   
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    
+    header {
+        background-color: #333;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+
+    
+    main {
+        padding: 20px;
+    }
+
+    
+    footer {
+        background-color: #333;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+
+    
+    .checkout-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    input[type="text"],
+    textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    input[type="checkbox"] {
+        margin-right: 5px;
+    }
+
+    .checkout-button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 5px;
+    }
+
+    .checkout-button:hover {
+        background-color: #45a049;
+    }
+    .total-price {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .discount-notice {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #4CAF50;
+    }
+</style>
+
+
+<div class="checkout-container">
+    <h1>Checkout</h1>
+    <p>Enter your delivery address and any additional instructions:</p>
+    <form action="{{ url_for('views.buy') }}" method="POST">
+        <div class="form-group">
+            <label for="delivery_address">Delivery Address:</label>
+            <input type="text" id="delivery_address" name="delivery_address" placeholder="Delivery Address" required>
+        </div>
+
+        <div class="form-group">
+            <label for="additional_instructions">Additional Instructions:</label>
+            <textarea id="additional_instructions" name="additional_instructions" placeholder="Additional Instructions"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="payment_method" value="cash_on_delivery" required>
+                Cash on Delivery
+            </label>
+        </div>
+        <div class="total-price">
+            Total Amount: ${{ total_price }}
+        </div>
+        {% if first_time_user %}
+            <div class="discount-notice">
+                Congratulations! You've got a 25% discount for being a first-time user.
+            </div>
+        {% endif %}
+
+        <button type="submit" class="checkout-button">Buy</button>
+    </form>
+</div>
+
+    
+{% endblock %}

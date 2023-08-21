@@ -1,0 +1,209 @@
+{% extends "base_home.html" %}
+{% block title %}Home{% endblock %}
+{% block navbar_items %}
+<ul class="nav">
+    <li class="nav-item active">
+        <a class="nav-link" href="/user_home">
+            <img src="{{url_for('static',filename='logo.png')}}" class="edit-icon">
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/logout">Logout</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/order_history">Your orders</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/user_profile">Profile</a>
+    </li>
+    <li class="nav-item ml-auto" style="padding-right: 115px;">
+        <form class="form-inline" action="{{ url_for('views.search_and_filter') }}" method="POST">
+            <div class="input-group">
+                <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="search_term">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </div>
+            </div>
+        </form>
+    </li>
+    <li class="nav-item">
+        <a href="{{ url_for('views.cart') }}" class="btn btn-primary">View Cart</a>
+    </li>
+</ul>
+<style>
+    .edit-icon {
+    width: 25px;
+    height: 25px;
+    margin-right: 5px;
+}
+</style>
+
+{% endblock %}
+
+{% block content %}
+<style>
+    .category-container {
+        overflow-x: scroll;
+        white-space: nowrap;
+        width: 100%;
+        margin-top: 20px;
+    }
+    .item-card {
+        display: inline-block;
+        margin-right: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .item-card h3 {
+        margin: 0;
+    }
+    .add-to-cart-btn {
+        display: inline-block;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 5px 10px;
+        text-decoration: none;
+        color: #333;
+    }
+    .filter-form {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .filter-form .input-group {
+        flex: 0 0 30%;
+        margin-bottom: 10px;
+    }
+    .filter-form .input-group:last-child {
+        flex: 0 0 100%;
+    }
+    .filter-form .btn-primary {
+        flex: 0 0 100%;
+    }
+    .filter-form {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .filter-form .input-group {
+        flex: 0 0 30%;
+        margin-bottom: 10px;
+    }
+    .filter-form .input-group:last-child {
+        flex: 0 0 100%;
+    }
+    .filter-form .btn-primary {
+        flex: 0 0 100%;
+    }
+</style>
+
+<h2>Welcome {{current_user.first_name}}</h2>
+
+<!-- Flash messages for 'success' category -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            {% if category == 'success' %}
+                <div class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
+
+<form class="form-inline mt-3 filter-form" action="{{ url_for('views.search_and_filter') }}" method="POST">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="category_search">Category:</label>
+        </div>
+        <select class="form-control" id="category_search" name="category_search">
+            <option value="">All Categories</option>
+            {% for category in all_categories %}
+                <option value="{{ category }}">{{ category }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Price Range Filters -->
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Min Price" name="min_price">
+    </div>
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Max Price" name="max_price">
+    </div>
+
+    <!-- Items Left Range Filters -->
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Min Items Left" name="min_items_left">
+    </div>
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Max Items Left" name="max_items_left">
+    </div>
+
+    <!-- Days to Expiry Range Filters -->
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Min Days to Expiry" name="min_expiry">
+    </div>
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Max Days to Expiry" name="max_expiry">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Apply Filters</button>
+</form>
+
+
+{% set cart_items_dict = {} %}
+{% for cart_item in cart_items %}
+    {% set _ = cart_items_dict.update({cart_item.item_id: cart_item}) %}
+{% endfor %}
+
+{% for category, items in categs.items() %}
+    <div class="category-container">
+        <div class="category-header">
+            <h2>{{ category }}</h2>
+        </div>
+        {% for item in items %}
+    <div class="item-card" style="{% if item.no_of_items_left == 0 %} opacity: 0.5; {% endif %}">
+        <h5>{{ item.item_name }}</h5>
+        <p>Price: {{ item.price }}</p>
+        <p>Number of items left: {{ item.no_of_items_left }}</p>
+        <p>Expiry date: {{item.expiry_date}}</p>
+        <p>Manufacture_date: {{item.manufacture_date}}</p>
+        
+        {% set cart_item = cart_items_dict.get(item.item_id) %}
+        <form action="{{ url_for('views.add_to_cart', item_id=item.item_id) }}" method="POST">
+            <div class="input-group">
+                {% if cart_item %}
+                    <input type="number" class="form-control" min="1" max="{{ item.no_of_items_left }}" value="{{ cart_item.no_of_item }}" name="no_of_items">
+                {% else %}
+                    <input type="number" class="form-control" min="1" max="{{ item.no_of_items_left }}" value="1" name="no_of_items">
+                {% endif %}
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary add-to-cart-btn" {% if item.no_of_items_left == 0 %} disabled {% endif %}>Add to Cart</button>
+                </div>
+            </div>
+        </form>
+        
+    </div>
+{% endfor %}
+
+    </div>
+{% endfor %}
+
+<a href="{{ url_for('views.user_home') }}" class="btn btn-danger">Reset Filters</a>
+
+
+{% endblock %}
