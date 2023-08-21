@@ -1,7 +1,11 @@
 # Online Grocery Store using Flask
 
-The Online Grocery Store Management System is a web-based application developed using the Flask framework that allows users to browse and purchase grocery items online. The system is divided into two main modules: the user module and the admin module. The user module allows customers to browse, search, and add grocery items to a cart and purchase them, while the admin module provides functionalities for updating/deleting/adding categories, items, and generating reports based on the sales data
-
+This project is a web application for an online grocery store allowing users to view and
+purchase items from different categories. Users can create accounts, log in, and add items to
+their cart and buy those items. This web application also includes an admin panel to add and
+manage categories,add and manage items to the webpage, and view sales data in charts. The
+goal is to provide a user-friendly shopping experience and efficient inventory management
+for the admin.
 ## Features
 
 ### User Module
