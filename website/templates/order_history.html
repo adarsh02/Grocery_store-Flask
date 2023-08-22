@@ -1,0 +1,33 @@
+{% extends "user_home.html" %}
+
+{% block content %}
+<h2>Order History</h2>
+
+{% if order_history %}
+    <table class="table">
+        <thead>
+            <tr>
+                
+                <th>Item Name</th>
+                <th>Number of Items</th>
+                <th>Date of Purchase</th>
+                <th>Delivery Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchase in order_history %}
+                <tr>
+                    
+                    <td>{{ purchase.item.item_name }}</td>
+                    <td>{{ purchase.no_of_items }}</td>
+                    <td>{{ purchase.date_of_purchase.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ purchase.address }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No order history available.</p>
+{% endif %}
+
+{% endblock %}
