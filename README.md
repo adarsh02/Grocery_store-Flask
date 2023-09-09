@@ -44,7 +44,7 @@ git clone <repository_url>
 ```
 2. Navigate to the project directory: `
 ```
-cd my_flask
+cd Grocery_store-Flask
 ```
 3. Run the Flask app:
 ```
